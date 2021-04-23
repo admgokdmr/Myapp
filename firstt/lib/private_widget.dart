@@ -20,11 +20,11 @@ class Body extends StatelessWidget{
       title: "Custom Widget",
       home: Scaffold(
         appBar: AppBar(
-          title: Text("Menü"),
+          title: Text("Menu"),
         ),
         body: Material(
           color: Colors.lime,
-          child: Text("Gövde",
+          child: Text("Body",
             textDirection: TextDirection.ltr,
             style: TextStyle(color: Colors.black54, fontSize: 25.0),),
         ),

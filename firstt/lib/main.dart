@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:temel_widget/models/personel.dart';
-import 'package:temel_widget/screens/personel_add.dart';
-import 'package:temel_widget/screens/personel_update.dart';
+
+import 'package:temel_widget/screens/person_add.dart';
+import 'package:temel_widget/models/person.dart';
+
 
 void main() {
   runApp(MaterialApp(
@@ -13,18 +14,18 @@ void main() {
 class MyApp extends StatefulWidget {
 
   @override
-  _MyAppState createState() => _MyAppState();
+  MyAppState createState() => MyAppState();
 }
 
-class _MyAppState extends State<MyApp> {
+class MyAppState extends State<MyApp> {
 
-  Personel selectedPersonel = Personel.withId(0, "", "", 0);
+  Person selectedPerson = Person.withId(0, "", "", 0);
 
-  List<Personel> personelListesi = [
-    Personel.withId(1, "Eleman1", "surname1", 20),
-    Personel.withId(2, "Eleman2", "surname2", 40),
-    Personel.withId(3, "Eleman3", "surname3", 50),
-    Personel.withId(4, "Eleman4", "surname4", 1)
+  List<Person> personList = [
+    Person.withId(1, "Person1", "surname1", 20),
+    Person.withId(2, "Person2", "surname2", 40),
+    Person.withId(3, "Person3", "surname3", 50),
+    Person.withId(4, "Person4", "surname4", 1)
   ];
 
   @override
@@ -32,14 +33,14 @@ class _MyAppState extends State<MyApp> {
 
     return Scaffold(
         appBar: AppBar(
-          title: Text("Personel Listesi"),
+          title: Text("Person List"),
         ),
         drawer: Drawer(
           child: ListView(
             padding: EdgeInsets.all(8.0),
             children: <Widget>[
               DrawerHeader(
-                child: Text("Menü"),
+                child: Text("Menu"),
                 padding: EdgeInsets.all(20.0),
                 decoration: BoxDecoration(
                   color: Colors.blue,
@@ -50,14 +51,14 @@ class _MyAppState extends State<MyApp> {
                 child: Column(
                     children: <Widget>[
                       ListTile(
-                        title: Text("Ayarlar"),
+                        title: Text("Settings"),
                         leading: Icon(Icons.settings),
                         onTap: (){
 
                         },
                       ),
                       ListTile(
-                        title: Text("Çıkış"),
+                        title: Text("Quit"),
                         leading: Icon(Icons.exit_to_app),
                         onTap: (){
                           SystemNavigator.pop();
@@ -83,47 +84,46 @@ class _MyAppState extends State<MyApp> {
           children: <Widget>[
             Expanded(
               child: ListView.builder(
-                  itemCount: personelListesi.length,
+                  itemCount: personList.length,
                   itemBuilder: (BuildContext context, int index) {
                     return ListTile(
                       leading: CircleAvatar(
                         backgroundImage: NetworkImage(
                             "https://productimages.hepsiburada.net/s/45/375/10835736559666.jpg"),
                       ),
-                      title: Text(personelListesi[index].ad +
+                      title: Text(personList[index].name +
                           " " +
-                          personelListesi[index].soyad),
-                      subtitle: Text("Tecrübe: " +
-                          personelListesi[index].kidem.toString() +
-                          "ünvan: " +
-                          personelListesi[index].getDurum),
-                      trailing: buildStatusIcon(personelListesi[index].kidem),
+                          personList[index].surname),
+                      subtitle: Text("Experience: " +
+                          personList[index].title.toString() +
+                          "title: " +
+                          personList[index].getState),
+                      trailing: buildStatusIcon(personList[index].title),
                       onTap: () {
                         setState(() {
-                          selectedPersonel = personelListesi[index];
+                          selectedPerson = personList[index];
                         });
-                        print(personelListesi[index].ad +
+                        print(personList[index].name +
                             " " +
-                            personelListesi[index].soyad +
-                            "a tıklandı");
+                            personList[index].surname +
+                            "clicked");
                       },
                       onLongPress: () {
-                        print(personelListesi[index].ad +
+                        print(personList[index].name +
                             " " +
-                            personelListesi[index].soyad +
-                            "a uzun tıklandı");
+                            personList[index].surname +
+                            "long clicked");
                       },
                     );
                   }),
             ),
-            Text("Seçili Personel: " + selectedPersonel.ad),
+            Text("Selected Person: " + selectedPerson.name),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Flexible(
-                  //eşit aralıklı olmasını sağlar(hizalanmayı)
                   fit: FlexFit.tight,
-                  flex: 1, //verilen parça genişliği
+                  flex: 1,
                   child: RaisedButton(
                     color: Colors.green,
                     child: Row(
@@ -132,7 +132,7 @@ class _MyAppState extends State<MyApp> {
                         SizedBox(
                           width: 4,
                         ),
-                        Text("Personel\nEkle"),
+                        Text("Person\nAdd"),
                       ],
                     ),
                     onPressed: () {
@@ -140,7 +140,7 @@ class _MyAppState extends State<MyApp> {
                           context,
                           MaterialPageRoute(
                               builder: (context) =>
-                                  PersonelAdd(personelListesi))).then((value) {
+                                  PersonAdd(personList))).then((value) {
                         setState(() {});
                       });
                     },
@@ -155,16 +155,16 @@ class _MyAppState extends State<MyApp> {
                       children: [
                         Icon(Icons.delete),
                         SizedBox(width: 4),
-                        Text("Personel \nSil"),
+                        Text("Person \nDelete"),
                       ],
                     ),
                     onPressed: () {
                       setState(() {
-                        personelListesi.remove(selectedPersonel);
+                        personList.remove(selectedPerson);
                       });
                       var alert = AlertDialog(
-                        title: Text("İşlem sonucu"),
-                        content: Text("Silindi"),
+                        title: Text("Result"),
+                        content: Text("Deleted"),
                       );
                       showDialog(
                           context: context,
@@ -178,12 +178,12 @@ class _MyAppState extends State<MyApp> {
         ));
   }
 
-  Widget buildStatusIcon(int kidem) {
-    if (kidem <= 5) {
+  Widget buildStatusIcon(int title) {
+    if (title <= 5) {
       return Icon(Icons.accessible_forward);
-    } else if (kidem <= 25) {
+    } else if (title <= 25) {
       return Icon(Icons.add_moderator);
-    } else if (kidem <= 45) {
+    } else if (title <= 45) {
       return Icon(Icons.agriculture_sharp);
     } else {
       return Icon(Icons.alt_route_outlined);
